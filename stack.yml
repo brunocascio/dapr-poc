@@ -1,0 +1,56 @@
+version: "3.8"
+
+networks:
+  dapr:
+
+services:
+
+  chat-server-api:
+    build:
+      context: apps/dapr-node-subscriber
+    image: dapr-node-subscriber:local
+    ports:
+      - 9000:9000
+    depends_on:
+      - placement
+    networks:
+      - dapr
+  chat-server-api-dapr:
+    image: daprio/daprd:edge
+    network_mode: "service:chat-server-api"
+    depends_on:
+      - chat-server-api
+    command: [
+      "./daprd",
+      "-app-id", "tasks.chat-server-api",
+      "-app-port", "8080",
+      "-placement-host-address", "tasks.placement:50006" # Dapr's placement service can be reach via the docker DNS entry
+    ]
+
+  chat-server-client:
+    build:
+      context: apps/dapr-chat-app-client
+    image: dapr-chat-app-client:local
+    ports:
+      - 8080:8080
+    depends_on:
+      - placement
+    networks:
+      - dapr
+  chat-server-client-dapr:
+    image: daprio/daprd:edge
+    network_mode: "service:chat-server-client"
+    depends_on:
+      - chat-server-client
+    command: [
+      "./daprd",
+      "-app-id", "tasks.chat-server-client",
+      "-app-port", "9000",
+      "-placement-host-address", "tasks.placement:50006" # Dapr's placement service can be reach via the docker DNS entry
+    ]
+
+  placement:
+    image: daprio/dapr
+    command: ["./placement", "-port", "50006"]
+    networks:
+      - dapr
