@@ -8,8 +8,8 @@ RUN npm ci
 
 COPY index.js .
 
-CMD node index.js
+CMD npx nodemon index.js
 
 USER node
 
-EXPOSE 3000 50001
+EXPOSE 3000
