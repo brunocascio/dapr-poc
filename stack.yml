@@ -29,6 +29,7 @@ services:
     command: -logs -ipc=false -pull -volumes
     depends_on:
       - placement
+      - pod-fake-products
     networks:
       - traefik
       - dapr
@@ -38,7 +39,7 @@ services:
         image: br1cascio/fake-orders-service
       # dapr sidecar
       pod.component.orders-service-dapr: |
-        image: daprio/daprd
+        image: daprio/daprd:edge
         command: [
           "./daprd",
           "-app-id", "orders-service",
@@ -58,29 +59,29 @@ services:
         - "traefik.http.routers.orders-service-dapr.middlewares=api-entrypoint"
         - "traefik.http.services.orders-service-dapr.loadbalancer.server.port=3500"
 
-  pod-fake-users:
-    image: rycus86/podlike
-    command: -logs -ipc=false -pull -volumes
-    depends_on:
-      - placement
-    networks:
-      - dapr
-    labels:
-      # sample api
-      pod.component.users-service: |
-        image: br1cascio/fake-users-service
-      # dapr sidecar
-      pod.component.users-service-dapr: |
-        image: daprio/daprd
-        command: [
-          "./daprd",
-          "-app-id", "users-service",
-          "-app-port", "3000",
-          "-placement-host-address", "tasks.placement:50006"
-        ]
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./apps/fake-users-service/index.js:/app/index.js
+  # pod-fake-users:
+  #   image: rycus86/podlike
+  #   command: -logs -ipc=false -pull -volumes
+  #   depends_on:
+  #     - placement
+  #   networks:
+  #     - dapr
+  #   labels:
+  #     # sample api
+  #     pod.component.users-service: |
+  #       image: br1cascio/fake-users-service
+  #     # dapr sidecar
+  #     pod.component.users-service-dapr: |
+  #       image: daprio/daprd:edge
+  #       command: [
+  #         "./daprd",
+  #         "-app-id", "users-service",
+  #         "-app-port", "3000",
+  #         "-placement-host-address", "tasks.placement:50006"
+  #       ]
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ./apps/fake-users-service/index.js:/app/index.js
 
   pod-fake-products:
     image: rycus86/podlike
@@ -95,7 +96,7 @@ services:
         image: br1cascio/fake-products-service
       # dapr sidecar
       pod.component.products-service-dapr: |
-        image: daprio/daprd
+        image: daprio/daprd:edge
         command: [
           "./daprd",
           "-app-id", "products-service",
@@ -107,7 +108,9 @@ services:
       - ./apps/fake-products-service/index.js:/app/index.js
 
   placement:
-    image: daprio/dapr
-    command: ["./placement", "-port", "50006"]
+    image: daprio/dapr:edge
+    command: ["./placement", "-port", "50006", "-log-level", "debug"]
     networks:
       - dapr
+    ports:
+      - 50006:50006

@@ -1,5 +1,4 @@
 const express = require("express");
-const faker = require("faker");
 const axios = require("axios");
 
 const PORT = process.env.PORT || 3000;
@@ -13,17 +12,16 @@ app.get('/orders', (_req, res) => {
     })
 })
 
-app.post('/orders', async (req, res) => {
-    try {
-        const data = await axios.get('http://localhost:3500/v1.0/invoke/users-service/method/users').catch(console.log);
-        return res.json({
-            data: data
-        })
-    } catch (error) {
-        return res.status(500).json({
-            error
-        })
-    }
+app.post('/orders', (_req, res) => {
+    axios
+        .get(
+        `http://localhost:3500/v1.0/invoke/products-service/method/products`
+        )
+        .then((response) => res.json(response))
+        .catch((err) => {
+            console.log(err)
+            res.status(500).json({error: err.message})
+        });
 })
 
 app.listen(PORT, () => console.log(`🚀 orders api listening on :${PORT} port`));

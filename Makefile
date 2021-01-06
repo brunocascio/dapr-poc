@@ -2,9 +2,9 @@ all: build deploy
 
 build:
 	# build fake services
-	@docker build -t br1cascio/fake-orders-service apps/fake-orders-service
-	@docker build -t br1cascio/fake-products-service apps/fake-products-service
-	@docker build -t br1cascio/fake-users-service apps/fake-users-service
+	@docker build --network host -t br1cascio/fake-orders-service apps/fake-orders-service
+	@docker build --network host -t br1cascio/fake-products-service apps/fake-products-service
+	@docker build --network host -t br1cascio/fake-users-service apps/fake-users-service
 	# Push services to dockerhub
 	@docker push br1cascio/fake-orders-service
 	@docker push br1cascio/fake-products-service
