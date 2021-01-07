@@ -1,14 +1,14 @@
 all: build deploy
 
+define buildx_image
+	@docker buildx build --network host --push --cache-from src=$(1),type=registry -t $(1) $(2)
+endef
+
 build:
 	# build fake services
-	@docker build --network host -t br1cascio/fake-orders-service apps/fake-orders-service
-	@docker build --network host -t br1cascio/fake-products-service apps/fake-products-service
-	@docker build --network host -t br1cascio/fake-users-service apps/fake-users-service
-	# Push services to dockerhub
-	@docker push br1cascio/fake-orders-service
-	@docker push br1cascio/fake-products-service
-	@docker push br1cascio/fake-users-service
+	@$(call buildx_image,"br1cascio/fake-orders-service","apps/fake-orders-service")
+	@$(call buildx_image,"br1cascio/fake-products-service","apps/fake-products-service")
+	@$(call buildx_image,"br1cascio/fake-users-service","apps/fake-users-service")
 
 deploy:
 	@docker stack deploy -c stack.yml dapr
