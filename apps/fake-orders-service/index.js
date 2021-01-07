@@ -6,22 +6,20 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.get('/orders', (_req, res) => {
-    const data = ['TODO']
-    return res.json({
-        data
-    })
+  const data = ['TODO']
+  return res.json({
+    data
+  })
 })
 
-app.post('/orders', (_req, res) => {
-    axios
-        .get(
-        `http://localhost:3500/v1.0/invoke/products-service/method/products`
-        )
-        .then((response) => res.json(response))
-        .catch((err) => {
-            console.log(err)
-            res.status(500).json({error: err.message})
-        });
+app.post('/orders', async (_req, res) => {
+  try {
+    const response = await axios.get(`http://localhost:3500/v1.0/invoke/products-service/method/products`);
+    console.log(response);
+    return res.send("YES!");
+  } catch (error) {
+    return res.status(500).json({ error: error.toJSON() })
+  }
 })
 
 app.listen(PORT, () => console.log(`🚀 orders api listening on :${PORT} port`));
