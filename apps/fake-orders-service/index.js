@@ -18,7 +18,8 @@ app.post('/orders', async (_req, res) => {
     console.log(response);
     return res.send("YES!");
   } catch (error) {
-    return res.status(500).json({ error: error.toJSON() })
+    console.log(error)
+    return res.status(500).json({ error })
   }
 })
 
