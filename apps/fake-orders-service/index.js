@@ -14,8 +14,7 @@ app.get('/orders', (_req, res) => {
 
 app.post('/orders', async (_req, res) => {
   try {
-    const response = await axios.get(`http://localhost:3500/v1.0/invoke/products-service/method/products`);
-    console.log(response);
+    const products = await axios.get(`http://localhost:3500/v1.0/invoke/products-service/method/products`);
     return res.send("YES!");
   } catch (error) {
     console.log(error)

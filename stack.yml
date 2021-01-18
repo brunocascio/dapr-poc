@@ -24,30 +24,17 @@ services:
       - "--providers.docker.swarmMode=true"
       - "--providers.docker.exposedbydefault=false"
 
-  pod-fake-orders:
-    image: rycus86/podlike
-    command: -logs -ipc=false -pull -volumes
+  fake-orders:
+    image: localhost:5000/br1cascio/fake-orders-service
+    build: apps/fake-orders-service
+    command: --app-id orders-service --app-port 3000 --dapr-http-port 3500 --placement-host-address tasks.placement:50006 npm start
     depends_on:
       - placement
-      - pod-fake-products
+      - fake-products
     networks:
       - traefik
       - dapr
-    labels:
-      # sample api
-      pod.component.orders-service: |
-        image: br1cascio/fake-orders-service
-      # dapr sidecar
-      pod.component.orders-service-dapr: |
-        image: daprio/daprd:edge
-        command: [
-          "./daprd",
-          "-app-id", "orders-service",
-          "-app-port", "3000",
-          "-placement-host-address", "tasks.placement:50006"
-        ]
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - ./apps/fake-orders-service/index.js:/app/index.js
     deploy:
       labels:
@@ -59,7 +46,7 @@ services:
         - "traefik.http.routers.orders-service-dapr.middlewares=api-entrypoint"
         - "traefik.http.services.orders-service-dapr.loadbalancer.server.port=3500"
 
-  # pod-fake-users:
+  # fake-users:
   #   image: rycus86/podlike
   #   command: -logs -ipc=false -pull -volumes
   #   depends_on:
@@ -69,7 +56,7 @@ services:
   #   labels:
   #     # sample api
   #     pod.component.users-service: |
-  #       image: br1cascio/fake-users-service
+  #       image: localhost:5000/br1cascio/fake-users-service
   #     # dapr sidecar
   #     pod.component.users-service-dapr: |
   #       image: daprio/daprd:edge
@@ -83,34 +70,20 @@ services:
   #     - /var/run/docker.sock:/var/run/docker.sock
   #     - ./apps/fake-users-service/index.js:/app/index.js
 
-  pod-fake-products:
-    image: rycus86/podlike
-    command: -logs -ipc=false -pull -volumes
+  fake-products:
+    image: localhost:5000/br1cascio/fake-products-service
+    build: apps/fake-products-service
+    command: --app-id products-service --app-port 3000 --dapr-http-port 3500 --placement-host-address tasks.placement:50006 npm start
     depends_on:
       - placement
     networks:
+      - traefik
       - dapr
-    labels:
-      # sample api
-      pod.component.products-service: |
-        image: br1cascio/fake-products-service
-      # dapr sidecar
-      pod.component.products-service-dapr: |
-        image: daprio/daprd:edge
-        command: [
-          "./daprd",
-          "-app-id", "products-service",
-          "-app-port", "3000",
-          "-placement-host-address", "tasks.placement:50006"
-        ]
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - ./apps/fake-products-service/index.js:/app/index.js
 
   placement:
-    image: daprio/dapr:edge
+    image: daprio/dapr
     command: ["./placement", "-port", "50006", "-log-level", "debug"]
     networks:
       - dapr
-    ports:
-      - 50006:50006

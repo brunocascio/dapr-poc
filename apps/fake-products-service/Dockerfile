@@ -1,6 +1,6 @@
-FROM node:lts-alpine
+FROM br1cascio/dapr:master-node-14
 
-WORKDIR /app
+WORKDIR /home/dapr/app
 
 COPY package*.json ./
 
@@ -9,7 +9,3 @@ RUN npm ci
 COPY index.js .
 
 CMD npx nodemon index.js
-
-USER node
-
-EXPOSE 3000

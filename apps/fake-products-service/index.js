@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.get('/products', (_req, res) => {
+    console.log('Hit products!')
     const data = [...Array(10).keys()].map(() => ({
         color: faker.commerce.color(),
         department: faker.commerce.department(),

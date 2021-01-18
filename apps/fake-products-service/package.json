@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -12,5 +13,8 @@
     "dapr-client": "^0.8.0-preview01",
     "express": "^4.17.1",
     "faker": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }
