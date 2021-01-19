@@ -1,11 +1,13 @@
-FROM br1cascio/dapr:master-node-14
+FROM br1cascio/dapr:node-14-alpine
 
-WORKDIR /home/dapr/app
+RUN mkdir -p /home/node/app
+
+WORKDIR /home/node/app
 
 COPY package*.json ./
 
 RUN npm ci
 
-COPY index.js .
+COPY . .
 
-CMD npx nodemon index.js
+CMD ["npm", "start"]

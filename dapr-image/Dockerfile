@@ -1,35 +1,17 @@
-#
-# Dapr base image
-#
-FROM ubuntu:20.04 as dapr-base
-
-RUN apt update && apt install -y bash curl \
-    && rm -rf /var/lib/apt/lists/* \
-    && adduser --system --shell /bin/bash dapr
-
-RUN curl -sL https://raw.githubusercontent.com/dapr/cli/master/install/install.sh | bash -
-
-USER dapr
-
-WORKDIR /home/dapr
-
-RUN dapr init --slim
-
-COPY entrypoint.sh ./entrypoint.sh
-
-ENTRYPOINT ["./entrypoint.sh"]
-
-#
-# Dapr with nodejs
-#
-FROM dapr-base as dapr-node
-
 ARG NODE_VERSION
+
+FROM node:${NODE_VERSION} as dapr-node
 
 USER root
 
-RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - \
-    && apt install nodejs \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk --no-cache add bash curl
 
-USER dapr
+RUN curl -s https://raw.githubusercontent.com/dapr/cli/master/install/install.sh | bash -
+
+USER node
+
+# RUN dapr init --slim
+
+COPY --chown=node:node entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]

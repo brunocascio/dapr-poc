@@ -2,6 +2,7 @@ version: "3.8"
 
 networks:
   dapr:
+    name: "dapr-net"
   traefik:
     name: "traefik"
 
@@ -26,11 +27,8 @@ services:
 
   fake-orders:
     image: localhost:5000/br1cascio/fake-orders-service
-    build: apps/fake-orders-service
-    command: --app-id orders-service --app-port 3000 --dapr-http-port 3500 --placement-host-address tasks.placement:50006 npm start
-    depends_on:
-      - placement
-      - fake-products
+    network_mode: host
+    command: --app-id orders-service --dapr-http-port 3500 --app-port 3000 npm start
     networks:
       - traefik
       - dapr
@@ -40,50 +38,26 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik"
-        - "traefik.http.routers.orders-service-dapr.rule=Host(`api.0.0.0.0.sslip.io`)"
-        - "traefik.http.routers.orders-service-dapr.entrypoints=http"
+        - "traefik.http.routers.orders-service.rule=Host(`api.0.0.0.0.sslip.io`)"
+        - "traefik.http.routers.orders-service.entrypoints=http"
         - "traefik.http.middlewares.api-entrypoint.addprefix.prefix=/v1.0/invoke/orders-service/method"
-        - "traefik.http.routers.orders-service-dapr.middlewares=api-entrypoint"
-        - "traefik.http.services.orders-service-dapr.loadbalancer.server.port=3500"
+        - "traefik.http.routers.orders-service.middlewares=api-entrypoint"
+        - "traefik.http.services.orders-service.loadbalancer.server.port=3500"
 
-  # fake-users:
-  #   image: rycus86/podlike
-  #   command: -logs -ipc=false -pull -volumes
-  #   depends_on:
-  #     - placement
-  #   networks:
-  #     - dapr
-  #   labels:
-  #     # sample api
-  #     pod.component.users-service: |
-  #       image: localhost:5000/br1cascio/fake-users-service
-  #     # dapr sidecar
-  #     pod.component.users-service-dapr: |
-  #       image: daprio/daprd:edge
-  #       command: [
-  #         "./daprd",
-  #         "-app-id", "users-service",
-  #         "-app-port", "3000",
-  #         "-placement-host-address", "tasks.placement:50006"
-  #       ]
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     - ./apps/fake-users-service/index.js:/app/index.js
+  fake-users:
+    image: localhost:5000/br1cascio/fake-users-service
+    network_mode: host
+    command: --app-id users-service --dapr-http-port 3500 --app-port 3000 npm start
+    networks:
+      - dapr
+    volumes:
+      - ./apps/fake-users-service/index.js:/app/index.js
 
   fake-products:
     image: localhost:5000/br1cascio/fake-products-service
-    build: apps/fake-products-service
-    command: --app-id products-service --app-port 3000 --dapr-http-port 3500 --placement-host-address tasks.placement:50006 npm start
-    depends_on:
-      - placement
+    network_mode: host
+    command: --app-id products-service --dapr-http-port 3500 --app-port 3000 npm start
     networks:
-      - traefik
       - dapr
     volumes:
       - ./apps/fake-products-service/index.js:/app/index.js
-
-  placement:
-    image: daprio/dapr
-    command: ["./placement", "-port", "50006", "-log-level", "debug"]
-    networks:
-      - dapr
