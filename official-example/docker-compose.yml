@@ -19,3 +19,9 @@ services:
     image: localhost:5000/dapr-pythonapp:dev
     networks:
       - dapr_example
+
+  placement:
+    image: daprio/dapr
+    networks:
+      - dapr_example
+    command: ["./placement", "-port", "56000"]

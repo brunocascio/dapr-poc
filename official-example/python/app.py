@@ -19,7 +19,7 @@ while True:
     try:
         print("Going to call to http://localhost:{}/v1.0/invoke/nodeapp/method/neworder".format(dapr_port))
         response = requests.post(dapr_url, json=message)
-        pprint("Response is {} {}".format(response.status_code,response.message))
+        pprint(response)
     except Exception as e:
         print(e)
 

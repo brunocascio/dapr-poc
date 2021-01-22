@@ -61,7 +61,7 @@ services:
       - ./apps/fake-products-service/index.js:/app/index.js
 
   placement:
-    image: daprio/placement:edge
+    image: daprio/dapr
     networks:
       - dapr_weave
     command: ["./placement", "-port", "56000"]

@@ -6,4 +6,4 @@ echo "Starting DAPR"
 #dapr run --app-id pythonapp --dapr-grpc-port 50004 --dapr-http-port 3500 python3 app.py
 
 
-dapr run --app-id pythonapp --dapr-grpc-port 50004 --dapr-http-port 3500 python3 app.py
+dapr run --app-id pythonapp --dapr-grpc-port 50004 --dapr-http-port 3500 --placement-host-address tasks.placement:56000 python3 app.py

@@ -6,4 +6,4 @@ echo "Starting DAPR"
 
 
 
-dapr run --app-id nodeapp --app-port 3000 --dapr-grpc-port 50002 --dapr-http-port 3500 node app.js
+dapr run --app-id nodeapp --app-port 3000 --dapr-grpc-port 50002 --dapr-http-port 3500 --placement-host-address tasks.placement:56000 node app.js
