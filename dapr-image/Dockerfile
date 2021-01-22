@@ -10,8 +10,6 @@ RUN curl -s https://raw.githubusercontent.com/dapr/cli/master/install/install.sh
 
 USER node
 
-# RUN dapr init --slim
+RUN dapr init --slim
 
-COPY --chown=node:node entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["dapr", "run"]

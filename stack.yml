@@ -1,8 +1,9 @@
 version: "3.8"
 
 networks:
-  dapr:
-    name: "dapr-net"
+  dapr_weave:
+    name: dapr_weave
+    driver: "weave:latest"
   traefik:
     name: "traefik"
 
@@ -27,11 +28,10 @@ services:
 
   fake-orders:
     image: localhost:5000/br1cascio/fake-orders-service
-    network_mode: host
-    command: --app-id orders-service --dapr-http-port 3500 --app-port 3000 npm start
     networks:
       - traefik
-      - dapr
+      - dapr_weave
+    command: --app-id orders-service --dapr-http-port 3500 --placement-host-address tasks.placement:56000 --app-port 3000 npm start
     volumes:
       - ./apps/fake-orders-service/index.js:/app/index.js
     deploy:
@@ -46,18 +46,22 @@ services:
 
   fake-users:
     image: localhost:5000/br1cascio/fake-users-service
-    network_mode: host
-    command: --app-id users-service --dapr-http-port 3500 --app-port 3000 npm start
     networks:
-      - dapr
+      - dapr_weave
+    command: --app-id users-service --dapr-http-port 3500 --placement-host-address tasks.placement:56000 --app-port 3000 npm start
     volumes:
       - ./apps/fake-users-service/index.js:/app/index.js
 
   fake-products:
     image: localhost:5000/br1cascio/fake-products-service
-    network_mode: host
-    command: --app-id products-service --dapr-http-port 3500 --app-port 3000 npm start
     networks:
-      - dapr
+      - dapr_weave
+    command: --app-id products-service --dapr-http-port 3500 --placement-host-address tasks.placement:56000 --app-port 3000 npm start
     volumes:
       - ./apps/fake-products-service/index.js:/app/index.js
+
+  placement:
+    image: daprio/placement:edge
+    networks:
+      - dapr_weave
+    command: ["./placement", "-port", "56000"]

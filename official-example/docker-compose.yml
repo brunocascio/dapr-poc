@@ -1,0 +1,21 @@
+version: "3"
+
+networks:
+  dapr_example:
+    driver: weave:latest
+    
+services:
+  redis:
+    image: "redis"
+    networks:
+      - dapr_example
+
+  nodeapp:
+    image: localhost:5000/dapr-nodeapp:dev
+    networks:
+      - dapr_example
+
+  pythonapp:
+    image: localhost:5000/dapr-pythonapp:dev
+    networks:
+      - dapr_example
