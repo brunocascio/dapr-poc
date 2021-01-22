@@ -21,7 +21,7 @@ services:
       - dapr_example
 
   placement:
-    image: daprio/dapr
+    image: daprio/placement
     networks:
       - dapr_example
-    command: ["./placement", "-port", "56000"]
+    command: ["./placement", "-port", "50005"]

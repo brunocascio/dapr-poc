@@ -5,12 +5,12 @@ RUN apt update && apt install -yq \
     python3 \
     python3-pip \
     net-tools \
-    iputils-ping \
 && rm -rf /var/lib/apt/lists/*
 
 # install dapr cli
-RUN curl -s https://raw.githubusercontent.com/dapr/cli/master/install/install.sh | bash
-RUN dapr init --slim
+RUN curl -s https://raw.githubusercontent.com/dapr/cli/master/install/install.sh | bash -s 1.0.0-rc.2 \
+    && dapr init --slim --runtime-version 1.0.0-rc.2 \
+    && touch ~/.dapr/config.yaml
 
 # install daprd
 ENV PATH="/root/.dapr/bin/:${PATH}"
@@ -20,5 +20,4 @@ WORKDIR /app
 RUN pip3 install requests
 COPY . .
 
-#EXPOSE 50004
 ENTRYPOINT ["/app/startup.sh"]

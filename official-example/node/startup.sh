@@ -1,9 +1,13 @@
 #!/bin/sh
-echo "Starting DAPR"
-#tail -f /dev/null
-#iperf -s -u -B 224.0.0.0 -i 1
-#dapr run --app-id nodeapp --app-port 3000 --dapr-grpc-port 50002 --dapr-http-port 3500 node app.js
 
+export DAPR_HOST_IP=$(ifconfig ethwe0 | grep "inet " | awk '{print $2}' | tr -d 'addr:')
 
-
-dapr run --app-id nodeapp --app-port 3000 --dapr-grpc-port 50002 --dapr-http-port 3500 --placement-host-address tasks.placement:56000 node app.js
+dapr run \
+    --app-id nodeapp \
+    --app-port 3000 \
+    --app-protocol http \
+    --dapr-http-port 3500 \
+    --components-path "/app/components" \
+    --placement-host-address tasks.placement \
+    --log-level debug \
+    -- node ./src/app.js
