@@ -2,7 +2,7 @@
 
 ## Deploy stack
 
-`make deploy`
+`make deploy-docker-swarm` or `make deploy-docker-compose`
 
 ## Clean stuff
 
@@ -10,9 +10,11 @@
 
 ## Reach services
 
-Perform a POST request to `http://api.0.0.0.0.sslip.io/orders`
+Perform a POST request to `http://api.0.0.0.0.sslip.io/orders` (swarm)
 
-Example with curl
+Perform a POST request to `http://localhost:3000/orders` (compose)
+
+Example with curl (swarm)
 
 ```
 curl -X POST http://api.0.0.0.0.sslip.io/orders

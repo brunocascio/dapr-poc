@@ -2,7 +2,7 @@ _DAPR_VERSION := $(or ${DAPR_VERSION},1.0.0-rc.2)
 
 export DAPR_VERSION=$(_DAPR_VERSION)
 
-all: build deploy
+all: build deploy-docker-swarm
 
 define build_push_image
 	@docker build --build-arg DAPR_VERSION=$(DAPR_VERSION) -t $(1) $(2)
@@ -35,4 +35,4 @@ deploy-docker-compose: _setup build
 
 clean:
 	@docker stack rm dapr
-	@docker-compose -f stack.yml down -v
+	@docker-compose -f stack.yml down -v -t1

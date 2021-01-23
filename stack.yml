@@ -10,7 +10,7 @@ networks:
 services:
 
   api-gateway:
-    image: traefik:v2.3
+    image: traefik:v2.4
     networks:
       - traefik
     ports:
@@ -33,6 +33,9 @@ services:
       - dapr_weave
     volumes:
       - ./apps/fake-orders-service/index.js:/app/index.js
+    ports:
+      # only for docker-compose purposes
+      - 3000:3000
     environment:
       DAPR_APP_ID: orders-service
       DAPR_APP_PORT: 3000
@@ -67,7 +70,7 @@ services:
       - ./apps/fake-products-service/index.js:/app/index.js
 
   placement:
-    image: "daprio/placement:$DAPR_VERSION"
+    image: daprio/placement:${DAPR_VERSION}
     networks:
       - dapr_weave
     command: ["./placement", "-port", "50005"]
