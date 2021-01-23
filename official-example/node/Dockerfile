@@ -1,19 +1,16 @@
-FROM ubuntu:20.04
+ARG DAPR_VERSION
 
-RUN apt update && apt install curl net-tools -yq \
-    && curl -sL https://deb.nodesource.com/setup_14.x | bash \
-    && apt install -yq nodejs \
-    && rm -rf /var/lib/apt/lists/*
+FROM br1cascio/dapr:${DAPR_VERSION}-node-lts-alpine
 
-# install dapr cli
-RUN curl -s https://raw.githubusercontent.com/dapr/cli/master/install/install.sh | bash -s 1.0.0-rc.2 \
-    && dapr init --slim --runtime-version 1.0.0-rc.2 \
-    && touch ~/.dapr/config.yaml
+RUN mkdir -p /home/node/app/src
+
+ENV DAPR_COMPONENTS_PATH=/home/node/app/components
+ENV DAPR_APP_PORT 3000
 
 # install app
-WORKDIR /app
-COPY src/package*.json ./src/
-RUN cd src && npm install
+WORKDIR /home/node/app/src
+COPY src/package*.json ./
+RUN npm install
+WORKDIR /home/node/app
 COPY . .
-EXPOSE 3000 3500 50002
-ENTRYPOINT ["/app/startup.sh"]
+CMD ["node", "src/app.js"]

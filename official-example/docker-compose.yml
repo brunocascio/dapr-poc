@@ -6,7 +6,7 @@ networks:
     
 services:
   redis:
-    image: "redis"
+    image: redis:alpine
     networks:
       - dapr_example
 
@@ -14,6 +14,9 @@ services:
     image: localhost:5000/dapr-nodeapp:dev
     networks:
       - dapr_example
+    environment:
+      DAPR_APP_ID: nodeapp
+      DAPR_LOG_LEVEL: debug
 
   pythonapp:
     image: localhost:5000/dapr-pythonapp:dev
@@ -21,7 +24,7 @@ services:
       - dapr_example
 
   placement:
-    image: daprio/placement
+    image: daprio/placement:${DAPR_VERSION}
     networks:
       - dapr_example
     command: ["./placement", "-port", "50005"]

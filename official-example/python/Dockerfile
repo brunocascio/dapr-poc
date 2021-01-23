@@ -1,5 +1,7 @@
 FROM ubuntu:20.04
 
+ARG DAPR_VERSION
+
 RUN apt update && apt install -yq \
     curl \
     python3 \
@@ -8,8 +10,8 @@ RUN apt update && apt install -yq \
 && rm -rf /var/lib/apt/lists/*
 
 # install dapr cli
-RUN curl -s https://raw.githubusercontent.com/dapr/cli/master/install/install.sh | bash -s 1.0.0-rc.2 \
-    && dapr init --slim --runtime-version 1.0.0-rc.2 \
+RUN curl -s https://raw.githubusercontent.com/dapr/cli/master/install/install.sh | bash -s ${DAPR_VERSION} \
+    && dapr init --slim --runtime-version ${DAPR_VERSION} \
     && touch ~/.dapr/config.yaml
 
 # install daprd

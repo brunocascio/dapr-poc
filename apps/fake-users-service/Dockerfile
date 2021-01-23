@@ -1,4 +1,6 @@
-FROM br1cascio/dapr:node-14-alpine
+ARG DAPR_VERSION
+
+FROM br1cascio/dapr:${DAPR_VERSION}-node-lts-alpine
 
 RUN mkdir -p /home/node/app
 

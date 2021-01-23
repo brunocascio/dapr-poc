@@ -31,9 +31,11 @@ services:
     networks:
       - traefik
       - dapr_weave
-    command: --app-id orders-service --dapr-http-port 3500 --placement-host-address tasks.placement:56000 --app-port 3000 npm start
     volumes:
       - ./apps/fake-orders-service/index.js:/app/index.js
+    environment:
+      DAPR_APP_ID: orders-service
+      DAPR_APP_PORT: 3000
     deploy:
       labels:
         - "traefik.enable=true"
@@ -48,7 +50,9 @@ services:
     image: localhost:5000/br1cascio/fake-users-service
     networks:
       - dapr_weave
-    command: --app-id users-service --dapr-http-port 3500 --placement-host-address tasks.placement:56000 --app-port 3000 npm start
+    environment:
+      DAPR_APP_ID: users-service
+      DAPR_APP_PORT: 3000
     volumes:
       - ./apps/fake-users-service/index.js:/app/index.js
 
@@ -56,12 +60,14 @@ services:
     image: localhost:5000/br1cascio/fake-products-service
     networks:
       - dapr_weave
-    command: --app-id products-service --dapr-http-port 3500 --placement-host-address tasks.placement:56000 --app-port 3000 npm start
+    environment:
+      DAPR_APP_ID: products-service
+      DAPR_APP_PORT: 3000
     volumes:
       - ./apps/fake-products-service/index.js:/app/index.js
 
   placement:
-    image: daprio/dapr
+    image: "daprio/placement:$DAPR_VERSION"
     networks:
       - dapr_weave
-    command: ["./placement", "-port", "56000"]
+    command: ["./placement", "-port", "50005"]
