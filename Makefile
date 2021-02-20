@@ -1,4 +1,5 @@
 _DAPR_VERSION := $(or ${DAPR_VERSION},1.0.0-rc.2)
+_IPALLOC_RANGE := $(or ${IPALLOC_RANGE},169.254.0.0/16)
 
 export DAPR_VERSION=$(_DAPR_VERSION)
 
@@ -10,10 +11,13 @@ define build_push_image
 endef
 
 _setup:
-	# Install weave plugin (if not exists)
+	@echo "Installing weave plugin only if does not exist"
+	@echo
+	@echo "IMPORTANT: If you make changes on this, you have to delete it before in order to get the new changes"
+	@echo
 	@(docker plugin ls | grep weave) >/dev/null || ( \
 		docker plugin install --grant-all-permissions --disable --alias weave weaveworks/net-plugin:latest_release \
-		&& docker plugin set weave IPALLOC_RANGE=169.254.0.0/16 \
+		&& docker plugin set weave IPALLOC_RANGE=$(_IPALLOC_RANGE) \
 		&& docker plugin set weave WEAVE_MULTICAST=1 \
 		&& docker plugin set weave WEAVE_PASSWORD=S3Cr3t! \
 		&& docker plugin enable weave)
