@@ -38,5 +38,8 @@ deploy-docker-compose: _setup build
 	@docker-compose -f stack.yml up -d
 
 clean:
-	@docker stack rm dapr
+	@docker stack rm dapr >/dev/null || true
 	@docker-compose -f stack.yml down -v -t1
+	@docker plugin rm -f weave || true
+	@echo
+	@echo "Cleanup: OK"
